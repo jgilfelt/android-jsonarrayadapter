@@ -122,6 +122,10 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 			return s;
 		}	
 	}
+	
+	public SimpleAdapter unwrap() {
+		return internalAdapter;
+	}
 
 	public int getCount() {
 		return internalAdapter.getCount();
