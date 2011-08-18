@@ -2,6 +2,7 @@ package com.readystatesoftware.android;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,25 +15,28 @@ import org.json.JSONObject;
 import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
 /**
  * @author jgilfelt
  */
-public class ExampleActivity extends ListActivity {
+public class ExampleActivity extends ListActivity implements OnItemClickListener {
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new SearchTwitterTask().execute("cat");
+        new SearchTwitterTask().execute("#AndroidDev");
     }
     
     class SearchTwitterTask extends AsyncTask<String, Integer, String> {
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			String url = "http://search.twitter.com/search.json?q=" + arg0[0];
+			String url = "http://search.twitter.com/search.json?q=" + URLEncoder.encode(arg0[0]);
 			try {
 				HttpClient client = new DefaultHttpClient();
 				HttpGet request = new HttpGet(url);
@@ -57,7 +61,7 @@ public class ExampleActivity extends ListActivity {
 				showData(result);
 			} catch (JSONException e) {
 				e.printStackTrace();
-				Toast.makeText(ExampleActivity.this, "something went wrong" , Toast.LENGTH_SHORT).show();	
+				Toast.makeText(ExampleActivity.this, "something went wrong", Toast.LENGTH_SHORT).show();
 			}	
 		}
 		
@@ -75,6 +79,12 @@ public class ExampleActivity extends ListActivity {
     		"id");
 
     	getListView().setAdapter(adapter);
+    	getListView().setOnItemClickListener(this);
     }
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Toast.makeText(ExampleActivity.this, "clicked tweet id " + id, Toast.LENGTH_SHORT).show();
+	}
     
 }
