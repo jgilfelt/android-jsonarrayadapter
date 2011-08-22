@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -29,7 +30,7 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 
 	private JSONArray data;
 	private String idField;
-	private SimpleAdapter internalAdapter;
+	private InternalSimpleAdapter internalAdapter;
 
 	/**
      * Constructor
@@ -63,7 +64,7 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 		this.data = data;
 		this.idField = idField;
 		List simpleData = jsonToMapList(data, from);
-		internalAdapter = new SimpleAdapter(context, simpleData, resource, from, to);
+		internalAdapter = new InternalSimpleAdapter(context, simpleData, resource, from, to);
 	}
 	
 	/**
@@ -189,7 +190,7 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 	 * @see #setViewImage(ImageView, String)
 	 */
 	public void setViewImage(ImageView v, int value) {
-		internalAdapter.setViewImage(v, value);
+		v.setImageResource(value);
 	}
 
 	/**
@@ -211,7 +212,11 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 	 * @see #setViewImage(ImageView, int)
 	 */
 	public void setViewImage(ImageView v, String value) {
-		internalAdapter.setViewImage(v, value);
+		try {
+            v.setImageResource(Integer.parseInt(value));
+        } catch (NumberFormatException nfe) {
+            v.setImageURI(Uri.parse(value));
+        }
 	}
 
 	/**
@@ -225,11 +230,36 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 	 *            the text to be set for the TextView
 	 */
 	public void setViewText(TextView v, String text) {
-		internalAdapter.setViewText(v, text);
+		v.setText(text);
 	}
 
 	public Filter getFilter() {
 		return internalAdapter.getFilter();
+	}
+	
+	class InternalSimpleAdapter extends SimpleAdapter {
+
+		public InternalSimpleAdapter(Context context,
+				List<? extends Map<String, ?>> data, int resource,
+				String[] from, int[] to) {
+			super(context, data, resource, from, to);
+		}
+
+		@Override
+		public void setViewImage(ImageView v, int value) {
+			JSONArrayAdapter.this.setViewImage(v, value);
+		}
+
+		@Override
+		public void setViewImage(ImageView v, String value) {
+			JSONArrayAdapter.this.setViewImage(v, value);
+		}
+
+		@Override
+		public void setViewText(TextView v, String text) {
+			JSONArrayAdapter.this.setViewText(v, text);
+		}
+		
 	}
 
 }
