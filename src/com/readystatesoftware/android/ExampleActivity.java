@@ -25,14 +25,14 @@ import android.widget.Toast;
  * @author jgilfelt
  */
 public class ExampleActivity extends ListActivity implements OnItemClickListener {
-    
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        new SearchTwitterTask().execute("#AndroidDev");
-    }
-    
-    class SearchTwitterTask extends AsyncTask<String, Integer, String> {
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		new SearchTwitterTask().execute("#AndroidDev");
+	}
+
+	class SearchTwitterTask extends AsyncTask<String, Integer, String> {
 
 		@Override
 		protected String doInBackground(String... arg0) {
@@ -54,7 +54,7 @@ public class ExampleActivity extends ListActivity implements OnItemClickListener
 				return null;
 			}
 		}
-		
+
 		@Override
 		protected void onPostExecute(String result) {
 			try {
@@ -64,27 +64,28 @@ public class ExampleActivity extends ListActivity implements OnItemClickListener
 				Toast.makeText(ExampleActivity.this, "something went wrong", Toast.LENGTH_SHORT).show();
 			}	
 		}
-		
+
 	}
-    
-    private void showData(String json) throws JSONException {
-    	JSONObject o = new JSONObject(json);
-    	JSONArray data = o.getJSONArray("results");
 
-    	ListAdapter adapter = new JSONArrayAdapter(this,
-    		data,
-    		android.R.layout.simple_list_item_2, 
-    		new String[] {"from_user", "text"},
-    		new int[] {android.R.id.text1, android.R.id.text2},
-    		"id");
+	private void showData(String json) throws JSONException {
+		JSONObject o = new JSONObject(json);
+		JSONArray data = o.getJSONArray("results");
 
-    	getListView().setAdapter(adapter);
-    	getListView().setOnItemClickListener(this);
-    }
+		ListAdapter adapter = new JSONArrayAdapter(this,
+				data,													// JSONArray data							
+				android.R.layout.simple_list_item_2, 					// a layout resource to display a row
+				new String[] {"from_user", "text"},						// field names from JSONObjects
+				new int[] {android.R.id.text1, android.R.id.text2},		// corresponding View ids to map field names to 
+				"id"													// id field from JSONObjects (optional)
+		);
+
+		getListView().setAdapter(adapter);
+		getListView().setOnItemClickListener(this);
+	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Toast.makeText(ExampleActivity.this, "clicked tweet id " + id, Toast.LENGTH_SHORT).show();
 	}
-    
+
 }
