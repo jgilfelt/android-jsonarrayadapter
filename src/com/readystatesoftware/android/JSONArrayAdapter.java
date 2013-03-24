@@ -116,7 +116,12 @@ public class JSONArrayAdapter extends BaseAdapter implements Filterable {
 	}
 	
 	private String optString(JSONObject o, String key) {
-		String s = o.optString(key);
+		//iterate over child json keys if we need to
+		String[] keys = key.split("\\.");
+		for (int i = 0; i < keys.length - 1; i++)
+        		o = o.optJSONObject(keys[i]);
+        	String lastKey = keys[keys.length - 1];
+        	String s = o.optString(lastKey);
 		if (s == null || s.equals("null")) {
 			return null;
 		} else {
